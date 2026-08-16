@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import lombok.ToString;
 
 @Entity
 @Table(name = "users")
@@ -30,6 +31,7 @@ public class user {
     @Column(unique = true)
     private String phoneNumber;
 
+    @ToString.Exclude
     @Column(nullable = false)
     private String password;
 

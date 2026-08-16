@@ -3,16 +3,17 @@ package com.tenpearls.contactmanagementbackend.dto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
+
+import java.util.List;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class AuthResponse {
-    @ToString.Exclude
-    private String token;
-    private Long userId;
+public class ContactResponse {
+    private Long id;
     private String firstName;
     private String lastName;
-    private String email;
+    private String title;
+    private List<ContactRequest.EmailDto> emails;
+    private List<ContactRequest.PhoneDto> phones;
 }

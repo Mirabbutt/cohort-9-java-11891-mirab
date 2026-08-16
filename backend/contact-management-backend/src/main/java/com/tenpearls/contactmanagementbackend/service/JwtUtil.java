@@ -8,14 +8,21 @@ import org.springframework.stereotype.Component;
 import javax.crypto.SecretKey;
 import java.util.Date;
 import java.util.function.Function;
+import org.springframework.beans.factory.annotation.Value;
+import jakarta.annotation.PostConstruct;
 
 @Component
 public class JwtUtil {
 
-    // Secret key for signing tokens (in real production, this should be in application.properties)
-    private final SecretKey secretKey = Keys.hmacShaKeyFor(
-            "ThisIsASecretKeyForContactManagementSystemJWT123456".getBytes());
+    @Value("${jwt.secret}")
+    private String jwtSecretString;
 
+    private SecretKey secretKey;
+
+    @PostConstruct
+    public void init() {
+        this.secretKey = Keys.hmacShaKeyFor(jwtSecretString.getBytes());
+    }
     private final long EXPIRATION_TIME = 1000 * 60 * 60 * 24; // 24 hours
 
     public String generateToken(String email) {
