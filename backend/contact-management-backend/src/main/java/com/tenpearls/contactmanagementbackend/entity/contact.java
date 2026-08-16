@@ -9,10 +9,15 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import lombok.ToString;
+import lombok.EqualsAndHashCode;
 
 @Entity
 @Table(name = "contacts")
 @Data
+@ToString(exclude = {"user", "emails", "phones"})
+@EqualsAndHashCode(of = "id")
+
 @NoArgsConstructor
 @AllArgsConstructor
 public class contact {

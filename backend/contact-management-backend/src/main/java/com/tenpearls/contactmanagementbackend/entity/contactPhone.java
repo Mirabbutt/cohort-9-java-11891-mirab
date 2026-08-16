@@ -5,10 +5,13 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString; import lombok.EqualsAndHashCode;
 
 @Entity
 @Table(name = "contact_phones")
 @Data
+@ToString(exclude = "contact")
+@EqualsAndHashCode(of = "id")
 @NoArgsConstructor
 @AllArgsConstructor
 public class contactPhone {
