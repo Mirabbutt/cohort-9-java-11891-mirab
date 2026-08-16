@@ -139,4 +139,64 @@ public class ContactController {
 
         return ResponseEntity.ok(toResponse(foundContact));
     }
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updateContact(@PathVariable Long id,
+                                           @Valid @RequestBody ContactRequest request,
+                                           @RequestHeader("Authorization") String authHeader) {
+        user currentUser = getCurrentUser(authHeader);
+
+        contact existingContact = contactRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Contact not found"));
+
+        if (!existingContact.getUser().getId().equals(currentUser.getId())) {
+            return ResponseEntity.status(403).body(Map.of("message", "Access denied"));
+        }
+
+        existingContact.setFirstName(request.getFirstName());
+        existingContact.setLastName(request.getLastName());
+        existingContact.setTitle(request.getTitle());
+
+        existingContact.getEmails().clear();
+        if (request.getEmails() != null) {
+            for (ContactRequest.EmailDto e : request.getEmails()) {
+                contactEmail email = new contactEmail();
+                email.setEmail(e.getEmail());
+                email.setLabel(e.getLabel());
+                email.setContact(existingContact);
+                existingContact.getEmails().add(email);
+            }
+        }
+
+        existingContact.getPhones().clear();
+        if (request.getPhones() != null) {
+            for (ContactRequest.PhoneDto p : request.getPhones()) {
+                contactPhone phone = new contactPhone();
+                phone.setPhoneNumber(p.getPhoneNumber());
+                phone.setLabel(p.getLabel());
+                phone.setContact(existingContact);
+                existingContact.getPhones().add(phone);
+            }
+        }
+
+        contact updated = contactRepository.save(existingContact);
+
+        return ResponseEntity.ok(toResponse(updated));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteContact(@PathVariable Long id,
+                                           @RequestHeader("Authorization") String authHeader) {
+        user currentUser = getCurrentUser(authHeader);
+
+        contact existingContact = contactRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Contact not found"));
+
+        if (!existingContact.getUser().getId().equals(currentUser.getId())) {
+            return ResponseEntity.status(403).body(Map.of("message", "Access denied"));
+        }
+
+        contactRepository.delete(existingContact);
+
+        return ResponseEntity.ok(Map.of("message", "Contact deleted successfully"));
+    }
 }
