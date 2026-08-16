@@ -7,10 +7,12 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import lombok.ToString;
+import lombok.EqualsAndHashCode;
 
 @Entity
 @Table(name = "users")
 @Data
+@EqualsAndHashCode(of = "id")
 @NoArgsConstructor
 @AllArgsConstructor
 public class user {
