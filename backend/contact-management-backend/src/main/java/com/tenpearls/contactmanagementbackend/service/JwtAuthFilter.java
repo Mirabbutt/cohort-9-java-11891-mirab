@@ -58,5 +58,10 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 // User was deleted after token was issued - treat as unauthenticated
             }
         }
+        filterChain.doFilter(request, response);
     }
 }
+
+
+
+

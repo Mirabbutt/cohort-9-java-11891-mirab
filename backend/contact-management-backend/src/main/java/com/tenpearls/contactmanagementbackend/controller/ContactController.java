@@ -130,7 +130,7 @@ public class ContactController {
                                             @RequestHeader("Authorization") String authHeader) {
         user currentUser = getCurrentUser(authHeader);
 
-        contact foundContact = contactRepository.findById(id)
+        contact foundContact = contactRepository.findByIdWithEmails(id)
                 .orElseThrow(() -> new RuntimeException("Contact not found"));
 
         if (!foundContact.getUser().getId().equals(currentUser.getId())) {
