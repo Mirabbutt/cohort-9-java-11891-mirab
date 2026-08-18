@@ -24,6 +24,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/api/contacts")
 public class ContactController {
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ContactController.class);
 
     private final ContactRepository contactRepository;
     private final UserRepository userRepository;
@@ -100,6 +101,7 @@ public class ContactController {
         newContact.setPhones(phones);
 
         contact saved = contactRepository.save(newContact);
+        log.info("Contact created: {} for user {}", saved.getId(), currentUser.getEmail());
 
         return ResponseEntity.ok(toResponse(saved));
     }
@@ -196,6 +198,7 @@ public class ContactController {
         }
 
         contactRepository.delete(existingContact);
+        log.info("Contact deleted: {} by user {}", id, currentUser.getEmail());
 
         return ResponseEntity.ok(Map.of("message", "Contact deleted successfully"));
     }

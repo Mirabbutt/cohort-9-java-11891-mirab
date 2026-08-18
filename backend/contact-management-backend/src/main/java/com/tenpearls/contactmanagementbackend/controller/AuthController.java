@@ -18,6 +18,7 @@ import java.util.Map;
 @RequestMapping("/api/auth")
 public class AuthController {
 
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(AuthController.class);
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
@@ -54,6 +55,7 @@ public class AuthController {
         newUser.setPassword(passwordEncoder.encode(request.getPassword()));
 
         userRepository.save(newUser);
+        log.info("New user registered: {}", newUser.getEmail());
 
         String token = jwtUtil.generateToken(newUser.getEmail());
 
@@ -83,6 +85,7 @@ public class AuthController {
         }
 
         String token = jwtUtil.generateToken(foundUser.getEmail());
+        log.info("User logged in: {}", foundUser.getEmail());
 
         AuthResponse response = new AuthResponse(token, foundUser.getId(), foundUser.getFirstName(),
                 foundUser.getLastName(), foundUser.getEmail());
