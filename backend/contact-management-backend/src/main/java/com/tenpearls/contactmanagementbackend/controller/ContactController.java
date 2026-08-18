@@ -199,4 +199,25 @@ public class ContactController {
 
         return ResponseEntity.ok(Map.of("message", "Contact deleted successfully"));
     }
+    @GetMapping("/search")
+    public ResponseEntity<?> searchContacts(@RequestParam String keyword,
+                                            @RequestHeader("Authorization") String authHeader,
+                                            @RequestParam(defaultValue = "0") int page,
+                                            @RequestParam(defaultValue = "10") int size) {
+        user currentUser = getCurrentUser(authHeader);
+        Pageable pageable = PageRequest.of(page, size);
+
+        Page<contact> contactsPage = contactRepository.searchByKeyword(currentUser, keyword, pageable);
+
+        List<ContactResponse> responses = contactsPage.getContent().stream()
+                .map(this::toResponse)
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(Map.of(
+                "contacts", responses,
+                "currentPage", contactsPage.getNumber(),
+                "totalItems", contactsPage.getTotalElements(),
+                "totalPages", contactsPage.getTotalPages()
+        ));
+    }
 }
