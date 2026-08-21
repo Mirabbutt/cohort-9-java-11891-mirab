@@ -2,10 +2,10 @@ package com.tenpearls.contactmanagementbackend.controller;
 
 import com.tenpearls.contactmanagementbackend.dto.ContactRequest;
 import com.tenpearls.contactmanagementbackend.dto.ContactResponse;
-import com.tenpearls.contactmanagementbackend.entity.contact;
-import com.tenpearls.contactmanagementbackend.entity.contactEmail;
-import com.tenpearls.contactmanagementbackend.entity.contactPhone;
-import com.tenpearls.contactmanagementbackend.entity.user;
+import com.tenpearls.contactmanagementbackend.entity.Contact;
+import com.tenpearls.contactmanagementbackend.entity.ContactEmail;
+import com.tenpearls.contactmanagementbackend.entity.ContactPhone;
+import com.tenpearls.contactmanagementbackend.entity.User;
 import com.tenpearls.contactmanagementbackend.Repository.ContactRepository;
 import com.tenpearls.contactmanagementbackend.Repository.UserRepository;
 import com.tenpearls.contactmanagementbackend.service.JwtUtil;
@@ -37,7 +37,7 @@ public class ContactController {
     }
 
     // Helper: get logged-in user from token
-    private user getCurrentUser(String authHeader) {
+    private User getCurrentUser(String authHeader) {
         String token = authHeader.substring(7);
         String email = jwtUtil.extractEmail(token);
         return userRepository.findByEmail(email)
@@ -45,7 +45,7 @@ public class ContactController {
     }
 
     // Helper: convert Contact entity -> ContactResponse DTO
-    private ContactResponse toResponse(contact c) {
+    private ContactResponse toResponse(Contact c) {
         List<ContactRequest.EmailDto> emails = c.getEmails().stream()
                 .map(e -> {
                     ContactRequest.EmailDto dto = new ContactRequest.EmailDto();
@@ -68,18 +68,18 @@ public class ContactController {
     @PostMapping
     public ResponseEntity<?> createContact(@Valid @RequestBody ContactRequest request,
                                            @RequestHeader("Authorization") String authHeader) {
-        user currentUser = getCurrentUser(authHeader);
+        User currentUser = getCurrentUser(authHeader);
 
-        contact newContact = new contact();
+        Contact newContact = new Contact();
         newContact.setFirstName(request.getFirstName());
         newContact.setLastName(request.getLastName());
         newContact.setTitle(request.getTitle());
         newContact.setUser(currentUser);
 
-        List<contactEmail> emails = new ArrayList<>();
+        List<ContactEmail> emails = new ArrayList<>();
         if (request.getEmails() != null) {
             for (ContactRequest.EmailDto e : request.getEmails()) {
-                contactEmail email = new contactEmail();
+                ContactEmail email = new ContactEmail();
                 email.setEmail(e.getEmail());
                 email.setLabel(e.getLabel());
                 email.setContact(newContact);
@@ -88,10 +88,10 @@ public class ContactController {
         }
         newContact.setEmails(emails);
 
-        List<contactPhone> phones = new ArrayList<>();
+        List<ContactPhone> phones = new ArrayList<>();
         if (request.getPhones() != null) {
             for (ContactRequest.PhoneDto p : request.getPhones()) {
-                contactPhone phone = new contactPhone();
+                ContactPhone phone = new ContactPhone();
                 phone.setPhoneNumber(p.getPhoneNumber());
                 phone.setLabel(p.getLabel());
                 phone.setContact(newContact);
@@ -100,7 +100,7 @@ public class ContactController {
         }
         newContact.setPhones(phones);
 
-        contact saved = contactRepository.save(newContact);
+        Contact saved = contactRepository.save(newContact);
         log.info("Contact created: {} for user {}", saved.getId(), currentUser.getEmail());
 
         return ResponseEntity.ok(toResponse(saved));
@@ -110,10 +110,10 @@ public class ContactController {
     public ResponseEntity<?> getAllContacts(@RequestHeader("Authorization") String authHeader,
                                             @RequestParam(defaultValue = "0") int page,
                                             @RequestParam(defaultValue = "10") int size) {
-        user currentUser = getCurrentUser(authHeader);
+        User currentUser = getCurrentUser(authHeader);
         Pageable pageable = PageRequest.of(page, size);
 
-        Page<contact> contactsPage = contactRepository.findByUser(currentUser, pageable);
+        Page<Contact> contactsPage = contactRepository.findByUser(currentUser, pageable);
 
         List<ContactResponse> responses = contactsPage.getContent().stream()
                 .map(this::toResponse)
@@ -130,9 +130,9 @@ public class ContactController {
     @GetMapping("/{id}")
     public ResponseEntity<?> getContactById(@PathVariable Long id,
                                             @RequestHeader("Authorization") String authHeader) {
-        user currentUser = getCurrentUser(authHeader);
+        User currentUser = getCurrentUser(authHeader);
 
-        contact foundContact = contactRepository.findByIdWithEmails(id)
+        Contact foundContact = contactRepository.findByIdWithEmails(id)
                 .orElseThrow(() -> new RuntimeException("Contact not found"));
 
         if (!foundContact.getUser().getId().equals(currentUser.getId())) {
@@ -145,9 +145,9 @@ public class ContactController {
     public ResponseEntity<?> updateContact(@PathVariable Long id,
                                            @Valid @RequestBody ContactRequest request,
                                            @RequestHeader("Authorization") String authHeader) {
-        user currentUser = getCurrentUser(authHeader);
+        User currentUser = getCurrentUser(authHeader);
 
-        contact existingContact = contactRepository.findById(id)
+        Contact existingContact = contactRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Contact not found"));
 
         if (!existingContact.getUser().getId().equals(currentUser.getId())) {
@@ -161,7 +161,7 @@ public class ContactController {
         existingContact.getEmails().clear();
         if (request.getEmails() != null) {
             for (ContactRequest.EmailDto e : request.getEmails()) {
-                contactEmail email = new contactEmail();
+                ContactEmail email = new ContactEmail();
                 email.setEmail(e.getEmail());
                 email.setLabel(e.getLabel());
                 email.setContact(existingContact);
@@ -172,7 +172,7 @@ public class ContactController {
         existingContact.getPhones().clear();
         if (request.getPhones() != null) {
             for (ContactRequest.PhoneDto p : request.getPhones()) {
-                contactPhone phone = new contactPhone();
+                ContactPhone phone = new ContactPhone();
                 phone.setPhoneNumber(p.getPhoneNumber());
                 phone.setLabel(p.getLabel());
                 phone.setContact(existingContact);
@@ -180,7 +180,7 @@ public class ContactController {
             }
         }
 
-        contact updated = contactRepository.save(existingContact);
+        Contact updated = contactRepository.save(existingContact);
 
         return ResponseEntity.ok(toResponse(updated));
     }
@@ -188,9 +188,9 @@ public class ContactController {
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteContact(@PathVariable Long id,
                                            @RequestHeader("Authorization") String authHeader) {
-        user currentUser = getCurrentUser(authHeader);
+        User currentUser = getCurrentUser(authHeader);
 
-        contact existingContact = contactRepository.findById(id)
+        Contact existingContact = contactRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Contact not found"));
 
         if (!existingContact.getUser().getId().equals(currentUser.getId())) {
@@ -207,10 +207,10 @@ public class ContactController {
                                             @RequestHeader("Authorization") String authHeader,
                                             @RequestParam(defaultValue = "0") int page,
                                             @RequestParam(defaultValue = "10") int size) {
-        user currentUser = getCurrentUser(authHeader);
+        User currentUser = getCurrentUser(authHeader);
         Pageable pageable = PageRequest.of(page, size);
 
-        Page<contact> contactsPage = contactRepository.searchByKeyword(currentUser, keyword, pageable);
+        Page<Contact> contactsPage = contactRepository.searchByKeyword(currentUser, keyword, pageable);
 
         List<ContactResponse> responses = contactsPage.getContent().stream()
                 .map(this::toResponse)

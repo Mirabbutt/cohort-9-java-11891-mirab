@@ -1,7 +1,7 @@
 package com.tenpearls.contactmanagementbackend.controller;
 
 import com.tenpearls.contactmanagementbackend.dto.*;
-import com.tenpearls.contactmanagementbackend.entity.user;
+import com.tenpearls.contactmanagementbackend.entity.User;
 import com.tenpearls.contactmanagementbackend.Repository.UserRepository;
 import com.tenpearls.contactmanagementbackend.service.JwtUtil;
 import jakarta.validation.Valid;
@@ -11,7 +11,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
 import java.util.Map;
 
 @RestController
@@ -47,7 +46,7 @@ public class AuthController {
             return ResponseEntity.badRequest().body(Map.of("message", "Phone number already registered"));
         }
 
-        user newUser = new user();
+        User newUser = new User();
         newUser.setFirstName(request.getFirstName());
         newUser.setLastName(request.getLastName());
         newUser.setEmail(request.getEmail());
@@ -68,7 +67,7 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<?> login(@Valid @RequestBody LoginRequest request) {
 
-        user foundUser = userRepository.findByEmail(request.getUsernameOrPhone())
+        User foundUser = userRepository.findByEmail(request.getUsernameOrPhone())
                 .or(() -> userRepository.findByPhoneNumber(request.getUsernameOrPhone()))
                 .orElse(null);
 
@@ -100,7 +99,7 @@ public class AuthController {
         String token = authHeader.substring(7);
         String email = jwtUtil.extractEmail(token);
 
-        user foundUser = userRepository.findByEmail(email)
+        User foundUser = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         if (!passwordEncoder.matches(request.getOldPassword(), foundUser.getPassword())) {

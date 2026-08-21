@@ -1,6 +1,6 @@
 package com.tenpearls.contactmanagementbackend.service;
 
-import com.tenpearls.contactmanagementbackend.entity.user;
+import com.tenpearls.contactmanagementbackend.entity.User;
 import com.tenpearls.contactmanagementbackend.Repository.UserRepository;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -21,7 +21,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        user foundUser = userRepository.findByEmail(email)
+        User foundUser = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + email));
 
         return org.springframework.security.core.userdetails.User.builder()

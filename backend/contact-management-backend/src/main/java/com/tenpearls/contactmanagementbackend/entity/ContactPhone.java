@@ -14,7 +14,7 @@ import lombok.ToString; import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(of = "id")
 @NoArgsConstructor
 @AllArgsConstructor
-public class contactPhone {
+public class ContactPhone {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,5 +28,5 @@ public class contactPhone {
     @ManyToOne
     @JoinColumn(name = "contact_id", nullable = false)
     @JsonIgnore
-    private contact contact;
+    private Contact contact;
 }

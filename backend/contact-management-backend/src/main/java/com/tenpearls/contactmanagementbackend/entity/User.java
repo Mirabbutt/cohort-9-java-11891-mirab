@@ -1,26 +1,21 @@
 package com.tenpearls.contactmanagementbackend.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 import lombok.ToString;
 import lombok.EqualsAndHashCode;
 
 @Entity
-@Table(name = "contacts")
+@Table(name = "users")
 @Data
-@ToString(exclude = {"user", "emails", "phones"})
 @EqualsAndHashCode(of = "id")
-
 @NoArgsConstructor
 @AllArgsConstructor
-public class contact {
+public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,18 +27,15 @@ public class contact {
     @Column(nullable = false)
     private String lastName;
 
-    private String title;
+    @Column(unique = true)
+    private String email;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
-    @JsonIgnore
-    private user user;
+    @Column(unique = true)
+    private String phoneNumber;
 
-    @OneToMany(mappedBy = "contact", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    private List<contactEmail> emails = new ArrayList<>();
-
-    @OneToMany(mappedBy = "contact", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    private List<contactPhone> phones = new ArrayList<>();
+    @ToString.Exclude
+    @Column(nullable = false)
+    private String password;
 
     @Column(updatable = false)
     private LocalDateTime createdAt;

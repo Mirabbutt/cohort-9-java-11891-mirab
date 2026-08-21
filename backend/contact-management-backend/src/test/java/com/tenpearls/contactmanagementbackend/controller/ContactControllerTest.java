@@ -1,8 +1,8 @@
 package com.tenpearls.contactmanagementbackend.controller;
 
 import com.tenpearls.contactmanagementbackend.dto.ContactRequest;
-import com.tenpearls.contactmanagementbackend.entity.contact;
-import com.tenpearls.contactmanagementbackend.entity.user;
+import com.tenpearls.contactmanagementbackend.entity.Contact;
+import com.tenpearls.contactmanagementbackend.entity.User;
 import com.tenpearls.contactmanagementbackend.Repository.ContactRepository;
 import com.tenpearls.contactmanagementbackend.Repository.UserRepository;
 import com.tenpearls.contactmanagementbackend.service.JwtUtil;
@@ -40,7 +40,7 @@ class ContactControllerTest {
 
         when(jwtUtil.extractEmail("fake-token")).thenReturn("test@test.com");
 
-        user currentUser = new user();
+        User currentUser = new User();
         currentUser.setId(1L);
         currentUser.setEmail("test@test.com");
 
@@ -52,18 +52,18 @@ class ContactControllerTest {
         request.setEmails(new ArrayList<>());
         request.setPhones(new ArrayList<>());
 
-        contact savedContact = new contact();
+        Contact savedContact = new Contact();
         savedContact.setId(1L);
         savedContact.setFirstName("John");
         savedContact.setLastName("Doe");
         savedContact.setUser(currentUser);
 
-        when(contactRepository.save(any(contact.class))).thenReturn(savedContact);
+        when(contactRepository.save(any(Contact.class))).thenReturn(savedContact);
 
         ResponseEntity<?> response = contactController.createContact(request, token);
 
         assertEquals(200, response.getStatusCode().value());
-        verify(contactRepository, times(1)).save(any(contact.class));
+        verify(contactRepository, times(1)).save(any(Contact.class));
     }
 
     @Test
@@ -72,16 +72,16 @@ class ContactControllerTest {
 
         when(jwtUtil.extractEmail("fake-token")).thenReturn("test@test.com");
 
-        user currentUser = new user();
+        User currentUser = new User();
         currentUser.setId(1L);
         currentUser.setEmail("test@test.com");
 
         when(userRepository.findByEmail("test@test.com")).thenReturn(Optional.of(currentUser));
 
-        user anotherUser = new user();
+        User anotherUser = new User();
         anotherUser.setId(2L);
 
-        contact someoneElsesContact = new contact();
+        Contact someoneElsesContact = new Contact();
         someoneElsesContact.setId(5L);
         someoneElsesContact.setUser(anotherUser);
 

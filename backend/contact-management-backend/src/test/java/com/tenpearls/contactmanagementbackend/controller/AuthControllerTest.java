@@ -1,7 +1,7 @@
 package com.tenpearls.contactmanagementbackend.controller;
 
 import com.tenpearls.contactmanagementbackend.dto.RegisterRequest;
-import com.tenpearls.contactmanagementbackend.entity.user;
+import com.tenpearls.contactmanagementbackend.entity.User;
 import com.tenpearls.contactmanagementbackend.Repository.UserRepository;
 import com.tenpearls.contactmanagementbackend.service.JwtUtil;
 import org.junit.jupiter.api.Test;
@@ -62,17 +62,17 @@ class AuthControllerTest {
         when(passwordEncoder.encode("Test@123")).thenReturn("hashedPassword");
         when(jwtUtil.generateToken("new@test.com")).thenReturn("fake-jwt-token");
 
-        user savedUser = new user();
+        User savedUser = new User();
         savedUser.setId(1L);
         savedUser.setFirstName("Test");
         savedUser.setLastName("User");
         savedUser.setEmail("new@test.com");
 
-        when(userRepository.save(any(user.class))).thenReturn(savedUser);
+        when(userRepository.save(any(User.class))).thenReturn(savedUser);
 
         ResponseEntity<?> response = authController.register(request);
 
         assertEquals(200, response.getStatusCode().value());
-        verify(userRepository, times(1)).save(any(user.class));
+        verify(userRepository, times(1)).save(any(User.class));
     }
 }
