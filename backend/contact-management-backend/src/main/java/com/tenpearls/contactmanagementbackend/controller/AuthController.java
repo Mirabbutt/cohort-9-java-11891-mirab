@@ -61,7 +61,8 @@ public class AuthController {
         String identity = email != null ? email : phoneNumber;
         String token = jwtUtil.generateToken(identity);
 
-        log.info("New user registered: {}", identity);
+
+        log.info("New user registered with id: {}", newUser.getId());
 
         AuthResponse response = new AuthResponse(token, newUser.getId(), newUser.getFirstName(),
                 newUser.getLastName(), newUser.getEmail());
@@ -92,7 +93,7 @@ public class AuthController {
 
         String token = jwtUtil.generateToken(identity);
 
-        log.info("User logged in: {}", identity);
+        log.info("User logged in with id: {}", foundUser.getId());
 
         AuthResponse response = new AuthResponse(token, foundUser.getId(), foundUser.getFirstName(),
                 foundUser.getLastName(), foundUser.getEmail());

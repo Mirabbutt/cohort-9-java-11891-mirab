@@ -101,7 +101,7 @@ public class ContactController {
         newContact.setPhones(phones);
 
         Contact saved = contactRepository.save(newContact);
-        log.info("Contact created: {} for user {}", saved.getId(), currentUser.getEmail());
+        log.info("Contact created: {} for user id: {}", saved.getId(), currentUser.getId());
 
         return ResponseEntity.ok(toResponse(saved));
     }
@@ -198,7 +198,7 @@ public class ContactController {
         }
 
         contactRepository.delete(existingContact);
-        log.info("Contact deleted: {} by user {}", id, currentUser.getEmail());
+        log.info("Contact deleted: {} by user id: {}", id, currentUser.getId());
 
         return ResponseEntity.ok(Map.of("message", "Contact deleted successfully"));
     }
