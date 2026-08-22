@@ -34,29 +34,34 @@ public class AuthController {
     @PostMapping("/register")
     public ResponseEntity<?> register(@Valid @RequestBody RegisterRequest request) {
 
-        if (request.getEmail() == null && request.getPhoneNumber() == null) {
+        String email = request.getEmail() != null && !request.getEmail().isBlank() ? request.getEmail().trim() : null;
+        String phoneNumber = request.getPhoneNumber() != null && !request.getPhoneNumber().isBlank() ? request.getPhoneNumber().trim() : null;
+
+        if (email == null && phoneNumber == null) {
             return ResponseEntity.badRequest().body(Map.of("message", "Email or phone number is required"));
         }
 
-        if (request.getEmail() != null && userRepository.existsByEmail(request.getEmail())) {
+        if (email != null && userRepository.existsByEmail(email)) {
             return ResponseEntity.badRequest().body(Map.of("message", "Email already registered"));
         }
 
-        if (request.getPhoneNumber() != null && userRepository.existsByPhoneNumber(request.getPhoneNumber())) {
+        if (phoneNumber != null && userRepository.existsByPhoneNumber(phoneNumber)) {
             return ResponseEntity.badRequest().body(Map.of("message", "Phone number already registered"));
         }
 
         User newUser = new User();
         newUser.setFirstName(request.getFirstName());
         newUser.setLastName(request.getLastName());
-        newUser.setEmail(request.getEmail());
-        newUser.setPhoneNumber(request.getPhoneNumber());
+        newUser.setEmail(email);
+        newUser.setPhoneNumber(phoneNumber);
         newUser.setPassword(passwordEncoder.encode(request.getPassword()));
 
         userRepository.save(newUser);
-        log.info("New user registered: {}", newUser.getEmail());
 
-        String token = jwtUtil.generateToken(newUser.getEmail());
+        String identity = email != null ? email : phoneNumber;
+        String token = jwtUtil.generateToken(identity);
+
+        log.info("New user registered: {}", identity);
 
         AuthResponse response = new AuthResponse(token, newUser.getId(), newUser.getFirstName(),
                 newUser.getLastName(), newUser.getEmail());
@@ -75,16 +80,19 @@ public class AuthController {
             return ResponseEntity.status(401).body(Map.of("message", "Invalid credentials"));
         }
 
+        String identity = foundUser.getEmail() != null ? foundUser.getEmail() : foundUser.getPhoneNumber();
+
         try {
             authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(foundUser.getEmail(), request.getPassword())
+                    new UsernamePasswordAuthenticationToken(identity, request.getPassword())
             );
         } catch (Exception e) {
             return ResponseEntity.status(401).body(Map.of("message", "Invalid credentials"));
         }
 
-        String token = jwtUtil.generateToken(foundUser.getEmail());
-        log.info("User logged in: {}", foundUser.getEmail());
+        String token = jwtUtil.generateToken(identity);
+
+        log.info("User logged in: {}", identity);
 
         AuthResponse response = new AuthResponse(token, foundUser.getId(), foundUser.getFirstName(),
                 foundUser.getLastName(), foundUser.getEmail());
