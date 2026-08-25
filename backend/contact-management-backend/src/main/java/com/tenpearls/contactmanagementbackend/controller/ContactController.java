@@ -8,6 +8,8 @@ import com.tenpearls.contactmanagementbackend.entity.ContactPhone;
 import com.tenpearls.contactmanagementbackend.entity.User;
 import com.tenpearls.contactmanagementbackend.Repository.ContactRepository;
 import com.tenpearls.contactmanagementbackend.Repository.UserRepository;
+import com.tenpearls.contactmanagementbackend.exception.ResourceNotFoundException;
+import com.tenpearls.contactmanagementbackend.exception.AccessDeniedException;
 import com.tenpearls.contactmanagementbackend.service.JwtUtil;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
@@ -36,15 +38,13 @@ public class ContactController {
         this.jwtUtil = jwtUtil;
     }
 
-    // Helper: get logged-in user from token
     private User getCurrentUser(String authHeader) {
         String token = authHeader.substring(7);
         String email = jwtUtil.extractEmail(token);
         return userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
     }
 
-    // Helper: convert Contact entity -> ContactResponse DTO
     private ContactResponse toResponse(Contact c) {
         List<ContactRequest.EmailDto> emails = c.getEmails().stream()
                 .map(e -> {
@@ -133,14 +133,15 @@ public class ContactController {
         User currentUser = getCurrentUser(authHeader);
 
         Contact foundContact = contactRepository.findByIdWithEmails(id)
-                .orElseThrow(() -> new RuntimeException("Contact not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Contact not found"));
 
         if (!foundContact.getUser().getId().equals(currentUser.getId())) {
-            return ResponseEntity.status(403).body(Map.of("message", "Access denied"));
+            throw new AccessDeniedException("Access denied");
         }
 
         return ResponseEntity.ok(toResponse(foundContact));
     }
+
     @PutMapping("/{id}")
     public ResponseEntity<?> updateContact(@PathVariable Long id,
                                            @Valid @RequestBody ContactRequest request,
@@ -148,10 +149,10 @@ public class ContactController {
         User currentUser = getCurrentUser(authHeader);
 
         Contact existingContact = contactRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Contact not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Contact not found"));
 
         if (!existingContact.getUser().getId().equals(currentUser.getId())) {
-            return ResponseEntity.status(403).body(Map.of("message", "Access denied"));
+            throw new AccessDeniedException("Access denied");
         }
 
         existingContact.setFirstName(request.getFirstName());
@@ -191,10 +192,10 @@ public class ContactController {
         User currentUser = getCurrentUser(authHeader);
 
         Contact existingContact = contactRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Contact not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Contact not found"));
 
         if (!existingContact.getUser().getId().equals(currentUser.getId())) {
-            return ResponseEntity.status(403).body(Map.of("message", "Access denied"));
+            throw new AccessDeniedException("Access denied");
         }
 
         contactRepository.delete(existingContact);
@@ -202,6 +203,7 @@ public class ContactController {
 
         return ResponseEntity.ok(Map.of("message", "Contact deleted successfully"));
     }
+
     @GetMapping("/search")
     public ResponseEntity<?> searchContacts(@RequestParam String keyword,
                                             @RequestHeader("Authorization") String authHeader,

@@ -117,7 +117,7 @@ public class AuthController {
         }
 
         User foundUser = userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new com.tenpearls.contactmanagementbackend.exception.ResourceNotFoundException("User not found"));
 
 
 

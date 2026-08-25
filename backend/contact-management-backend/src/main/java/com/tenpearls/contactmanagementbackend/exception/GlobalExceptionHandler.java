@@ -38,10 +38,24 @@ public class GlobalExceptionHandler {
         return buildResponse(HttpStatus.NOT_FOUND, ex.getMessage());
     }
 
-    // Handles generic runtime errors (e.g. "Contact not found")
+    // Handles "resource not found" errors (e.g. "Contact not found")
+    @ExceptionHandler(com.tenpearls.contactmanagementbackend.exception.ResourceNotFoundException.class)
+    public ResponseEntity<Map<String, Object>> handleResourceNotFound(
+            com.tenpearls.contactmanagementbackend.exception.ResourceNotFoundException ex) {
+        return buildResponse(HttpStatus.NOT_FOUND, ex.getMessage());
+    }
+
+    // Handles "access denied" errors
+    @ExceptionHandler(com.tenpearls.contactmanagementbackend.exception.AccessDeniedException.class)
+    public ResponseEntity<Map<String, Object>> handleAccessDenied(
+            com.tenpearls.contactmanagementbackend.exception.AccessDeniedException ex) {
+        return buildResponse(HttpStatus.FORBIDDEN, ex.getMessage());
+    }
+
+    // Any other unexpected runtime error - do NOT expose internal details
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<Map<String, Object>> handleRuntimeException(RuntimeException ex) {
-        return buildResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
+        return buildResponse(HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected error occurred");
     }
 
     // Catch-all for any other unexpected error
