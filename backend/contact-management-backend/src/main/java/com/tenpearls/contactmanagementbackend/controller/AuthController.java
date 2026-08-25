@@ -100,16 +100,26 @@ public class AuthController {
 
         return ResponseEntity.ok(response);
     }
-
     @PostMapping("/change-password")
     public ResponseEntity<?> changePassword(@Valid @RequestBody ChangePasswordRequest request,
                                             @RequestHeader("Authorization") String authHeader) {
 
+        if (authHeader == null || !authHeader.startsWith("Bearer ") || authHeader.length() <= 7) {
+            return ResponseEntity.status(401).body(Map.of("message", "Invalid or missing token"));
+        }
+
         String token = authHeader.substring(7);
-        String email = jwtUtil.extractEmail(token);
+        String email;
+        try {
+            email = jwtUtil.extractEmail(token);
+        } catch (Exception e) {
+            return ResponseEntity.status(401).body(Map.of("message", "Invalid or expired token"));
+        }
 
         User foundUser = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
+
+
 
         if (!passwordEncoder.matches(request.getOldPassword(), foundUser.getPassword())) {
             return ResponseEntity.badRequest().body(Map.of("message", "Old password is incorrect"));
