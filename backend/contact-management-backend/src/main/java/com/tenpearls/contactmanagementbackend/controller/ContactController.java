@@ -107,11 +107,12 @@ public class ContactController {
     }
 
     @GetMapping
-    public ResponseEntity<?> getAllContacts(@RequestHeader("Authorization") String authHeader,
-                                            @RequestParam(defaultValue = "0") int page,
-                                            @RequestParam(defaultValue = "10") int size) {
-        User currentUser = getCurrentUser(authHeader);
-        Pageable pageable = PageRequest.of(page, size);
+        public ResponseEntity<?> getAllContacts(@RequestHeader("Authorization") String authHeader,
+        @RequestParam(defaultValue = "0") int page,
+        @RequestParam(defaultValue = "10") int size) {
+            User currentUser = getCurrentUser(authHeader);
+            size = Math.min(size, 50);
+            Pageable pageable = PageRequest.of(page, size);
 
         Page<Contact> contactsPage = contactRepository.findByUser(currentUser, pageable);
 
@@ -205,12 +206,14 @@ public class ContactController {
     }
 
     @GetMapping("/search")
-    public ResponseEntity<?> searchContacts(@RequestParam String keyword,
-                                            @RequestHeader("Authorization") String authHeader,
-                                            @RequestParam(defaultValue = "0") int page,
-                                            @RequestParam(defaultValue = "10") int size) {
-        User currentUser = getCurrentUser(authHeader);
-        Pageable pageable = PageRequest.of(page, size);
+
+        public ResponseEntity<?> searchContacts(@RequestParam String keyword,
+                @RequestHeader("Authorization") String authHeader,
+        @RequestParam(defaultValue = "0") int page,
+        @RequestParam(defaultValue = "10") int size) {
+            User currentUser = getCurrentUser(authHeader);
+            size = Math.min(size, 50);
+            Pageable pageable = PageRequest.of(page, size);
 
         Page<Contact> contactsPage = contactRepository.searchByKeyword(currentUser, keyword, pageable);
 
