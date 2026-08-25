@@ -16,17 +16,22 @@ public class ContactRequest {
 
     private String title;
 
+    @jakarta.validation.Valid
     private List<EmailDto> emails;
+
+    @jakarta.validation.Valid
     private List<PhoneDto> phones;
 
     @Data
     public static class EmailDto {
+        @jakarta.validation.constraints.NotBlank(message = "Email cannot be blank")
         private String email;
         private String label;
     }
 
     @Data
     public static class PhoneDto {
+        @jakarta.validation.constraints.NotBlank(message = "Phone number cannot be blank")
         private String phoneNumber;
         private String label;
     }
