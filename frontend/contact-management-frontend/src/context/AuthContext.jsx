@@ -21,10 +21,16 @@ export function AuthProvider({ children }) {
         setUser(userData);
     };
 
+
     const logout = () => {
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
-        setUser(null);
+        try {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+        } catch (e) {
+            // Ignore storage errors, still clear in-memory state
+        } finally {
+            setUser(null);
+        }
     };
 
     const isAuthenticated = !!user;
