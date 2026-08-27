@@ -5,6 +5,7 @@ import RegisterPage from './pages/RegisterPage';
 import ContactsPage from './pages/ContactsPage';
 import AddContactPage from './pages/AddContactPage';
 import EditContactPage from './pages/EditContactPage';
+import ProfilePage from './pages/ProfilePage';
 
 function PrivateRoute({ children }) {
     const { isAuthenticated } = useAuth();
@@ -39,7 +40,15 @@ function AppRoutes() {
                         <EditContactPage />
                     </PrivateRoute>
                 }
-            />s
+            />
+            <Route
+                path="/profile"
+                element={
+                    <PrivateRoute>
+                        <ProfilePage />
+                    </PrivateRoute>
+                }
+            />
             <Route path="*" element={<Navigate to="/contacts" />} />
         </Routes>
     );

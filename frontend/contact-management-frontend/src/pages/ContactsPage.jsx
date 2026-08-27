@@ -63,6 +63,7 @@ function ContactsPage() {
         <div style={styles.container}>
             <div style={styles.header}>
                 <h2>Welcome, {user?.firstName}</h2>
+                <button onClick={() => navigate('/profile')} style={styles.profileButton}>Profile</button>
                 <button onClick={handleLogout} style={styles.logoutButton}>Log out</button>
             </div>
 
@@ -110,6 +111,7 @@ const styles = {
     container: { maxWidth: '600px', margin: '40px auto', padding: '0 16px', fontFamily: 'Arial, sans-serif' },
     header: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' },
     logoutButton: { padding: '8px 14px', background: '#6b7280', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer' },
+    profileButton: { padding: '8px 14px', background: '#e5e7eb', border: 'none', borderRadius: '6px', cursor: 'pointer', marginRight: '8px' },
     searchRow: { display: 'flex', gap: '8px', marginBottom: '20px' },
     searchInput: { flex: 1, padding: '10px', border: '1px solid #ccc', borderRadius: '6px' },
     searchButton: { padding: '10px 16px', background: '#e5e7eb', border: 'none', borderRadius: '6px', cursor: 'pointer' },
