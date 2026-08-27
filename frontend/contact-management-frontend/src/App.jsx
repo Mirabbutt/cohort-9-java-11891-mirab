@@ -3,6 +3,8 @@ import { AuthProvider, useAuth } from './context/AuthContext';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import ContactsPage from './pages/ContactsPage';
+import AddContactPage from './pages/AddContactPage';
+import EditContactPage from './pages/EditContactPage';
 
 function PrivateRoute({ children }) {
     const { isAuthenticated } = useAuth();
@@ -22,6 +24,22 @@ function AppRoutes() {
                     </PrivateRoute>
                 }
             />
+            <Route
+                path="/contacts/new"
+                element={
+                    <PrivateRoute>
+                        <AddContactPage />
+                    </PrivateRoute>
+                }
+            />
+            <Route
+                path="/contacts/:id/edit"
+                element={
+                    <PrivateRoute>
+                        <EditContactPage />
+                    </PrivateRoute>
+                }
+            />s
             <Route path="*" element={<Navigate to="/contacts" />} />
         </Routes>
     );
