@@ -25,9 +25,11 @@ class ErrorBoundary extends Component {
                 <div style={{ textAlign: 'center', marginTop: '80px', fontFamily: 'Arial, sans-serif' }}>
                     <h2>Something went wrong</h2>
                     <p style={{ color: '#666' }}>Please try again.</p>
-                    <button type="button" onClick={this.handleRetry} >
+                    <button
+                        type="button"
+                        onClick={this.handleRetry}
                         style={{ padding: '10px 20px', background: '#2563eb', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', marginTop: '10px' }}
-
+                    >
                         Go to Login
                     </button>
                 </div>
