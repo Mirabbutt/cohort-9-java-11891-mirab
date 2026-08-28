@@ -2,11 +2,13 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getContacts, searchContacts, deleteContact } from '../services/api';
 import { useAuth } from '../context/AuthContext';
+import ConfirmModal from '../components/ConfirmModal';
 
 function ContactsPage() {
     const [contacts, setContacts] = useState([]);
     const [keyword, setKeyword] = useState('');
     const [loading, setLoading] = useState(true);
+    const [deleteTarget, setDeleteTarget] = useState(null);
 
     const { user, logout } = useAuth();
     const navigate = useNavigate();
@@ -44,10 +46,11 @@ function ContactsPage() {
         }
     };
 
-    const handleDelete = async (id) => {
-        if (!window.confirm('Delete this contact?')) return;
+    const confirmDelete = async () => {
+        if (!deleteTarget) return;
         try {
-            await deleteContact(id);
+            await deleteContact(deleteTarget.id);
+            setDeleteTarget(null);
             loadContacts();
         } catch (err) {
             console.error('Delete failed', err);
@@ -80,7 +83,7 @@ function ContactsPage() {
                         </div>
                         <div style={styles.actions}>
                             <button type="button" onClick={() => navigate(`/contacts/${c.id}/edit`)} style={styles.editButton}>Edit</button>
-                            <button type="button" onClick={() => handleDelete(c.id)} style={styles.deleteButton}>Delete</button>
+                            <button type="button" onClick={() => setDeleteTarget(c)} style={styles.deleteButton}>Delete</button>
                         </div>
                     </div>
                 ))}
@@ -109,6 +112,14 @@ function ContactsPage() {
             </form>
 
             {renderContactsList()}
+
+            <ConfirmModal
+                isOpen={!!deleteTarget}
+                title="Delete contact"
+                message={`Are you sure you want to delete ${deleteTarget?.firstName} ${deleteTarget?.lastName}? This can't be undone.`}
+                onConfirm={confirmDelete}
+                onCancel={() => setDeleteTarget(null)}
+            />
         </div>
     );
 }
