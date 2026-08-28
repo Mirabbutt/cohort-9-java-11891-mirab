@@ -39,7 +39,7 @@ function ProfilePage() {
     return (
         <div style={styles.container}>
             <div style={styles.card}>
-                <button onClick={() => navigate('/contacts')} style={styles.backButton}>&larr; Back</button>
+                <button type="button" onClick={() => navigate('/contacts')} style={styles.backButton}>&larr; Back</button>
                 <h2 style={styles.title}>My Profile</h2>
 
                 <div style={styles.infoBox}>
@@ -72,7 +72,7 @@ function ProfilePage() {
                     </button>
                 </form>
 
-                <button onClick={handleLogout} style={styles.logoutButton}>Log out</button>
+                <button type="button" onClick={handleLogout} style={styles.logoutButton}>Log out</button>
             </div>
         </div>
     );

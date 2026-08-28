@@ -29,6 +29,7 @@ function EditContactPage() {
             setEmail(c.emails?.[0]?.email || '');
             setPhone(c.phones?.[0]?.phoneNumber || '');
         } catch (err) {
+            console.error('Failed to load contact:', err);
             setError('Could not load contact');
         } finally {
             setFetching(false);

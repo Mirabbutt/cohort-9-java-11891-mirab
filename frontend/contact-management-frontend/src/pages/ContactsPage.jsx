@@ -59,12 +59,41 @@ function ContactsPage() {
         navigate('/login');
     };
 
+    const renderContactsList = () => {
+        if (loading) {
+            return <p>Loading...</p>;
+        }
+        if (contacts.length === 0) {
+            return <p style={styles.empty}>No contacts found</p>;
+        }
+        return (
+            <div>
+                {contacts.map((c) => (
+                    <div key={c.id} style={styles.contactCard}>
+                        <div>
+                            <strong>{c.firstName} {c.lastName}</strong> {c.title && `(${c.title})`}
+                            <div style={styles.details}>
+                                {c.emails.map((e) => e.email).join(', ')}
+                                {c.emails.length > 0 && c.phones.length > 0 && ' · '}
+                                {c.phones.map((p) => p.phoneNumber).join(', ')}
+                            </div>
+                        </div>
+                        <div style={styles.actions}>
+                            <button type="button" onClick={() => navigate(`/contacts/${c.id}/edit`)} style={styles.editButton}>Edit</button>
+                            <button type="button" onClick={() => handleDelete(c.id)} style={styles.deleteButton}>Delete</button>
+                        </div>
+                    </div>
+                ))}
+            </div>
+        );
+    };
+
     return (
         <div style={styles.container}>
             <div style={styles.header}>
                 <h2>Welcome, {user?.firstName}</h2>
-                <button onClick={() => navigate('/profile')} style={styles.profileButton}>Profile</button>
-                <button onClick={handleLogout} style={styles.logoutButton}>Log out</button>
+                <button type="button" onClick={() => navigate('/profile')} style={styles.profileButton}>Profile</button>
+                <button type="button" onClick={handleLogout} style={styles.logoutButton}>Log out</button>
             </div>
 
             <form onSubmit={handleSearch} style={styles.searchRow}>
@@ -79,30 +108,7 @@ function ContactsPage() {
                 <button type="button" onClick={() => navigate('/contacts/new')} style={styles.addButton}>+ Add contact</button>
             </form>
 
-            {loading ? (
-                <p>Loading...</p>
-            ) : contacts.length === 0 ? (
-                <p style={styles.empty}>No contacts found</p>
-            ) : (
-                <div>
-                    {contacts.map((c) => (
-                        <div key={c.id} style={styles.contactCard}>
-                            <div>
-                                <strong>{c.firstName} {c.lastName}</strong> {c.title && `(${c.title})`}
-                                <div style={styles.details}>
-                                    {c.emails.map((e) => e.email).join(', ')}
-                                    {c.emails.length > 0 && c.phones.length > 0 && ' · '}
-                                    {c.phones.map((p) => p.phoneNumber).join(', ')}
-                                </div>
-                            </div>
-                            <div style={styles.actions}>
-                                <button onClick={() => navigate(`/contacts/${c.id}/edit`)} style={styles.editButton}>Edit</button>
-                                <button onClick={() => handleDelete(c.id)} style={styles.deleteButton}>Delete</button>
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            )}
+            {renderContactsList()}
         </div>
     );
 }
