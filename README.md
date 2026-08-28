@@ -73,3 +73,6 @@ npm run dev
 
 Unit tests are located in `src/test/java` and can be run with:
 mvn test
+## Code Quality
+
+This project is integrated with [SonarQube Cloud](https://sonarcloud.io) for continuous code quality analysis, covering both the Spring Boot backend and React frontend. Reliability, maintainability, and security issues are tracked and addressed as part of the development workflow.
