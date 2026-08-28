@@ -9,8 +9,12 @@ export function AuthProvider({ children }) {
             return savedUser ? JSON.parse(savedUser) : null;
         } catch (e) {
             console.error('Failed to parse saved user data:', e);
-            localStorage.removeItem('user');
-            localStorage.removeItem('token');
+            try {
+                localStorage.removeItem('user');
+                localStorage.removeItem('token');
+            } catch (cleanupError) {
+                console.error('Failed to clear corrupted storage:', cleanupError);
+            }
             return null;
         }
     });
