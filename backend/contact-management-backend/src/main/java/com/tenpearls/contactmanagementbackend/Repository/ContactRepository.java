@@ -23,9 +23,11 @@ public interface ContactRepository extends JpaRepository<Contact, Long> {
 
     @Query(value = "SELECT DISTINCT c FROM Contact c LEFT JOIN FETCH c.emails WHERE c.user = :user AND " +
             "(LOWER(c.firstName) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
-            "LOWER(c.lastName) LIKE LOWER(CONCAT('%', :keyword, '%')))",
+            "LOWER(c.lastName) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
+            "LOWER(CONCAT(c.firstName, ' ', c.lastName)) LIKE LOWER(CONCAT('%', :keyword, '%')))",
             countQuery = "SELECT COUNT(c) FROM Contact c WHERE c.user = :user AND " +
                     "(LOWER(c.firstName) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
-                    "LOWER(c.lastName) LIKE LOWER(CONCAT('%', :keyword, '%')))")
+                    "LOWER(c.lastName) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
+                    "LOWER(CONCAT(c.firstName, ' ', c.lastName)) LIKE LOWER(CONCAT('%', :keyword, '%')))")
     Page<Contact> searchByKeyword(@Param("user") User user, @Param("keyword") String keyword, Pageable pageable);
 }
