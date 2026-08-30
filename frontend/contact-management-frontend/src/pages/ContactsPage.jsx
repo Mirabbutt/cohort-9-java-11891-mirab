@@ -1,14 +1,16 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getContacts, searchContacts, deleteContact } from '../services/api';
+import { getContacts, searchContacts, deleteContact, createContact, updateContact } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import ConfirmModal from '../components/ConfirmModal';
+import ContactFormModal from '../components/ContactFormModal';
 
 function ContactsPage() {
     const [contacts, setContacts] = useState([]);
     const [keyword, setKeyword] = useState('');
     const [loading, setLoading] = useState(true);
     const [deleteTarget, setDeleteTarget] = useState(null);
+    const [formModal, setFormModal] = useState({ isOpen: false, mode: 'create', data: null });
 
     const { user, logout } = useAuth();
     const navigate = useNavigate();
@@ -57,6 +59,16 @@ function ContactsPage() {
         }
     };
 
+    const handleSaveContact = async (formData) => {
+        if (formModal.mode === 'edit') {
+            await updateContact(formModal.data.id, formData);
+        } else {
+            await createContact(formData);
+        }
+        setFormModal({ isOpen: false, mode: 'create', data: null });
+        loadContacts();
+    };
+
     const handleLogout = () => {
         logout();
         navigate('/login');
@@ -82,7 +94,7 @@ function ContactsPage() {
                             </div>
                         </div>
                         <div style={styles.actions}>
-                            <button type="button" onClick={() => navigate(`/contacts/${c.id}/edit`)} style={styles.editButton}>Edit</button>
+                            <button type="button" onClick={() => setFormModal({ isOpen: true, mode: 'edit', data: c })} style={styles.editButton}>Edit</button>
                             <button type="button" onClick={() => setDeleteTarget(c)} style={styles.deleteButton}>Delete</button>
                         </div>
                     </div>
@@ -108,7 +120,7 @@ function ContactsPage() {
                     style={styles.searchInput}
                 />
                 <button type="submit" style={styles.searchButton}>Search</button>
-                <button type="button" onClick={() => navigate('/contacts/new')} style={styles.addButton}>+ Add contact</button>
+                <button type="button" onClick={() => setFormModal({ isOpen: true, mode: 'create', data: null })} style={styles.addButton}>+ Add contact</button>
             </form>
 
             {renderContactsList()}
@@ -119,6 +131,14 @@ function ContactsPage() {
                 message={`Are you sure you want to delete ${deleteTarget?.firstName} ${deleteTarget?.lastName}? This can't be undone.`}
                 onConfirm={confirmDelete}
                 onCancel={() => setDeleteTarget(null)}
+            />
+
+            <ContactFormModal
+                isOpen={formModal.isOpen}
+                mode={formModal.mode}
+                initialData={formModal.data}
+                onSave={handleSaveContact}
+                onCancel={() => setFormModal({ isOpen: false, mode: 'create', data: null })}
             />
         </div>
     );
