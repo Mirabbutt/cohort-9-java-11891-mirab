@@ -4,6 +4,7 @@ import { getContacts, searchContacts, deleteContact, createContact, updateContac
 import { useAuth } from '../context/AuthContext';
 import ConfirmModal from '../components/ConfirmModal';
 import ContactFormModal from '../components/ContactFormModal';
+import ContactDetailModal from '../components/ContactDetailModal';
 import Toast from '../components/Toast';
 
 const AVATAR_COLORS = ['#2563eb', '#7c3aed', '#dc2626', '#059669', '#d97706', '#db2777'];
@@ -24,6 +25,7 @@ function ContactsPage() {
     const [loading, setLoading] = useState(true);
     const [deleteTarget, setDeleteTarget] = useState(null);
     const [formModal, setFormModal] = useState({ isOpen: false, mode: 'create', data: null });
+    const [detailContact, setDetailContact] = useState(null);
     const [toast, setToast] = useState('');
     const [page, setPage] = useState(0);
     const [totalPages, setTotalPages] = useState(1);
@@ -78,6 +80,7 @@ function ContactsPage() {
         try {
             await deleteContact(deleteTarget.id);
             setDeleteTarget(null);
+            setDetailContact(null);
             showToast('Contact deleted');
             loadContacts();
         } catch (err) {
@@ -100,6 +103,15 @@ function ContactsPage() {
     const handleLogout = () => {
         logout();
         navigate('/login');
+    };
+
+    const openEditFromDetail = (contact) => {
+        setDetailContact(null);
+        setFormModal({ isOpen: true, mode: 'edit', data: contact });
+    };
+
+    const openDeleteFromDetail = (contact) => {
+        setDeleteTarget(contact);
     };
 
     const renderContactsList = () => {
@@ -134,7 +146,7 @@ function ContactsPage() {
                 {contacts.map((c) => {
                     const fullName = `${c.firstName} ${c.lastName}`;
                     return (
-                        <div key={c.id} style={styles.contactCard}>
+                        <div key={c.id} style={styles.contactCard} onClick={() => setDetailContact(c)}>
                             <div style={styles.contactLeft}>
                                 <div style={{ ...styles.avatar, background: getAvatarColor(fullName) }}>
                                     {getInitials(c.firstName, c.lastName)}
@@ -148,7 +160,7 @@ function ContactsPage() {
                                     </div>
                                 </div>
                             </div>
-                            <div style={styles.actions}>
+                            <div style={styles.actions} onClick={(e) => e.stopPropagation()}>
                                 <button type="button" onClick={() => setFormModal({ isOpen: true, mode: 'edit', data: c })} style={styles.editButton}>Edit</button>
                                 <button type="button" onClick={() => setDeleteTarget(c)} style={styles.deleteButton}>Delete</button>
                             </div>
@@ -190,6 +202,14 @@ function ContactsPage() {
                 </div>
             )}
 
+            <ContactDetailModal
+                isOpen={!!detailContact}
+                contact={detailContact}
+                onEdit={openEditFromDetail}
+                onDelete={openDeleteFromDetail}
+                onClose={() => setDetailContact(null)}
+            />
+
             <ConfirmModal
                 isOpen={!!deleteTarget}
                 title="Delete contact"
@@ -218,7 +238,7 @@ const styles = {
     searchInput: { flex: 1, padding: '10px', border: '1px solid #ccc', borderRadius: '6px' },
     searchButton: { padding: '10px 16px', background: '#e5e7eb', border: 'none', borderRadius: '6px', cursor: 'pointer' },
     addButton: { padding: '10px 16px', background: '#2563eb', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', whiteSpace: 'nowrap' },
-    contactCard: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'white', padding: '14px', borderRadius: '8px', marginBottom: '10px', boxShadow: '0 1px 3px rgba(0,0,0,0.08)' },
+    contactCard: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'white', padding: '14px', borderRadius: '8px', marginBottom: '10px', boxShadow: '0 1px 3px rgba(0,0,0,0.08)', cursor: 'pointer' },
     contactLeft: { display: 'flex', alignItems: 'center', gap: '12px' },
     avatar: { width: '40px', height: '40px', borderRadius: '50%', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: '14px', flexShrink: 0 },
     details: { fontSize: '13px', color: '#666', marginTop: '4px' },
