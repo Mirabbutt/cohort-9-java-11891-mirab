@@ -21,14 +21,15 @@ function ContactDetailModal({ isOpen, contact, onEdit, onDelete, onClose }) {
                 </div>
 
                 <div style={styles.divider}>
-                    {contact.emails?.map((e, i) => (
-                        <div key={i} style={styles.field}>
+                            {contact.emails?.map((e) => (
+                                <div key={e.email} style={styles.field}>
                             <p style={styles.fieldLabel}>Email{e.label ? ` (${e.label})` : ''}</p>
                             <p style={styles.fieldValue}>{e.email}</p>
                         </div>
                     ))}
-                    {contact.phones?.map((p, i) => (
-                        <div key={i} style={styles.field}>
+
+                            {contact.phones?.map((p) => (
+                                <div key={p.phoneNumber} style={styles.field}>
                             <p style={styles.fieldLabel}>Phone{p.label ? ` (${p.label})` : ''}</p>
                             <p style={styles.fieldValue}>{p.phoneNumber}</p>
                         </div>

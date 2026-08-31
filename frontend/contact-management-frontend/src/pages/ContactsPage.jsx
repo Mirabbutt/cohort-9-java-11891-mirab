@@ -9,8 +9,12 @@ import Toast from '../components/Toast';
 
 const AVATAR_COLORS = ['#2563eb', '#7c3aed', '#dc2626', '#059669', '#d97706', '#db2777'];
 
-function getInitials(first, last) {
-    return `${first?.[0] || ''}${last?.[0] || ''}`.toUpperCase();
+
+    function getInitials(first, last) {
+        const f = first ? String.fromCodePoint(first.codePointAt(0)) : '';
+        const l = last ? String.fromCodePoint(last.codePointAt(0)) : '';
+        return `${f}${l}`.toUpperCase();
+
 }
 
 function getAvatarColor(name) {
@@ -146,14 +150,28 @@ function ContactsPage() {
                 {contacts.map((c) => {
                     const fullName = `${c.firstName} ${c.lastName}`;
                     return (
-                        <div key={c.id} style={styles.contactCard} onClick={() => setDetailContact(c)}>
-                            <div style={styles.contactLeft}>
+                            <div
+                                key={c.id}
+                                style={styles.contactCard}
+                                role="button"
+                                tabIndex={0}
+                                onClick={() => setDetailContact(c)}
+                                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') setDetailContact(c); }}
+                            >
+                              <div style={styles.contactLeft}>
                                 <div style={{ ...styles.avatar, background: getAvatarColor(fullName) }}>
                                     {getInitials(c.firstName, c.lastName)}
                                 </div>
                                 <div>
                                     <strong>{c.firstName} {c.lastName}</strong> {c.title && `(${c.title})`}
-                                    <div style={styles.details}>
+                                        <div
+                                            key={c.id}
+                                            style={styles.contactCard}
+                                            role="button"
+                                            tabIndex={0}
+                                            onClick={() => setDetailContact(c)}
+                                            onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') setDetailContact(c); }}
+                                        >
                                         {c.emails.map((e) => e.email).join(', ')}
                                         {c.emails.length > 0 && c.phones.length > 0 && ' · '}
                                         {c.phones.map((p) => p.phoneNumber).join(', ')}
