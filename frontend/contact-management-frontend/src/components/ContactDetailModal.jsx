@@ -8,9 +8,9 @@ function getInitials(first, last) {
 function ContactDetailModal({ isOpen, contact, onEdit, onDelete, onClose }) {
     if (!isOpen || !contact) return null;
 
-    return (
-        <div style={modalStyles.overlay}>
-            <div style={{ ...modalStyles.modal, width: '360px' }}>
+                return (
+                <div style={modalStyles.overlay} role="dialog" aria-modal="true" aria-label="Contact details">
+                    <div style={{ ...modalStyles.modal, width: '360px' }}>
                 <div style={styles.header}>
                     <div style={{ ...styles.avatar, background: '#2563eb' }}>
                         {getInitials(contact.firstName, contact.lastName)}
