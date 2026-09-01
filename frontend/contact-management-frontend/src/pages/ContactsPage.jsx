@@ -9,12 +9,10 @@ import Toast from '../components/Toast';
 
 const AVATAR_COLORS = ['#2563eb', '#7c3aed', '#dc2626', '#059669', '#d97706', '#db2777'];
 
-
-    function getInitials(first, last) {
-        const f = first ? String.fromCodePoint(first.codePointAt(0)) : '';
-        const l = last ? String.fromCodePoint(last.codePointAt(0)) : '';
-        return `${f}${l}`.toUpperCase();
-
+function getInitials(first, last) {
+    const f = first ? String.fromCodePoint(first.codePointAt(0)) : '';
+    const l = last ? String.fromCodePoint(last.codePointAt(0)) : '';
+    return `${f}${l}`.toUpperCase();
 }
 
 function getAvatarColor(name) {
@@ -150,35 +148,22 @@ function ContactsPage() {
                 {contacts.map((c) => {
                     const fullName = `${c.firstName} ${c.lastName}`;
                     return (
-                            <div
-                                key={c.id}
-                                style={styles.contactCard}
-                                role="button"
-                                tabIndex={0}
-                                onClick={() => setDetailContact(c)}
-                                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') setDetailContact(c); }}
-                            >
-                              <div style={styles.contactLeft}>
+                        <div key={c.id} style={styles.contactCard}>
+                            <div style={styles.contactLeft}>
                                 <div style={{ ...styles.avatar, background: getAvatarColor(fullName) }}>
                                     {getInitials(c.firstName, c.lastName)}
                                 </div>
                                 <div>
                                     <strong>{c.firstName} {c.lastName}</strong> {c.title && `(${c.title})`}
-                                        <div
-                                            key={c.id}
-                                            style={styles.contactCard}
-                                            role="button"
-                                            tabIndex={0}
-                                            onClick={() => setDetailContact(c)}
-                                            onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') setDetailContact(c); }}
-                                        >
+                                    <div style={styles.details}>
                                         {c.emails.map((e) => e.email).join(', ')}
                                         {c.emails.length > 0 && c.phones.length > 0 && ' · '}
                                         {c.phones.map((p) => p.phoneNumber).join(', ')}
                                     </div>
                                 </div>
                             </div>
-                            <div style={styles.actions} onClick={(e) => e.stopPropagation()}>
+                            <div style={styles.actions}>
+                                <button type="button" onClick={() => setDetailContact(c)} style={styles.viewButton}>View</button>
                                 <button type="button" onClick={() => setFormModal({ isOpen: true, mode: 'edit', data: c })} style={styles.editButton}>Edit</button>
                                 <button type="button" onClick={() => setDeleteTarget(c)} style={styles.deleteButton}>Delete</button>
                             </div>
@@ -256,11 +241,12 @@ const styles = {
     searchInput: { flex: 1, padding: '10px', border: '1px solid #ccc', borderRadius: '6px' },
     searchButton: { padding: '10px 16px', background: '#e5e7eb', border: 'none', borderRadius: '6px', cursor: 'pointer' },
     addButton: { padding: '10px 16px', background: '#2563eb', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', whiteSpace: 'nowrap' },
-    contactCard: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'white', padding: '14px', borderRadius: '8px', marginBottom: '10px', boxShadow: '0 1px 3px rgba(0,0,0,0.08)', cursor: 'pointer' },
+    contactCard: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'white', padding: '14px', borderRadius: '8px', marginBottom: '10px', boxShadow: '0 1px 3px rgba(0,0,0,0.08)' },
     contactLeft: { display: 'flex', alignItems: 'center', gap: '12px' },
     avatar: { width: '40px', height: '40px', borderRadius: '50%', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: '14px', flexShrink: 0 },
     details: { fontSize: '13px', color: '#666', marginTop: '4px' },
     actions: { display: 'flex', gap: '8px' },
+    viewButton: { padding: '6px 12px', background: '#dbeafe', color: '#1d4ed8', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '13px' },
     editButton: { padding: '6px 12px', background: '#e5e7eb', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '13px' },
     deleteButton: { padding: '6px 12px', background: '#fee2e2', color: '#dc2626', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '13px' },
     skeletonCard: { display: 'flex', alignItems: 'center', gap: '12px', background: 'white', padding: '14px', borderRadius: '8px', marginBottom: '10px' },

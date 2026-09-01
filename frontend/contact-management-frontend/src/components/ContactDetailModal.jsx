@@ -1,7 +1,8 @@
 import { modalStyles } from './modalStyles';
-
 function getInitials(first, last) {
-    return `${first?.[0] || ''}${last?.[0] || ''}`.toUpperCase();
+    const f = first ? String.fromCodePoint(first.codePointAt(0)) : '';
+    const l = last ? String.fromCodePoint(last.codePointAt(0)) : '';
+    return `${f}${l}`.toUpperCase();
 }
 
 function ContactDetailModal({ isOpen, contact, onEdit, onDelete, onClose }) {
