@@ -1,4 +1,5 @@
 import { modalStyles } from './modalStyles';
+
 function getInitials(first, last) {
     const f = first ? String.fromCodePoint(first.codePointAt(0)) : '';
     const l = last ? String.fromCodePoint(last.codePointAt(0)) : '';
@@ -8,9 +9,9 @@ function getInitials(first, last) {
 function ContactDetailModal({ isOpen, contact, onEdit, onDelete, onClose }) {
     if (!isOpen || !contact) return null;
 
-                return (
-                <div style={modalStyles.overlay} role="dialog" aria-modal="true" aria-label="Contact details">
-                    <div style={{ ...modalStyles.modal, width: '360px' }}>
+    return (
+        <div style={modalStyles.overlay} role="dialog" aria-modal="true" aria-label="Contact details">
+            <div style={{ ...modalStyles.modal, width: '360px' }}>
                 <div style={styles.header}>
                     <div style={{ ...styles.avatar, background: '#2563eb' }}>
                         {getInitials(contact.firstName, contact.lastName)}
@@ -22,19 +23,20 @@ function ContactDetailModal({ isOpen, contact, onEdit, onDelete, onClose }) {
                 </div>
 
                 <div style={styles.divider}>
-                            {contact.emails?.map((e) => (
-                                <div key={e.email} style={styles.field}>
+                    {contact.emails?.map((e) => (
+                        <div key={e.email} style={styles.field}>
                             <p style={styles.fieldLabel}>Email{e.label ? ` (${e.label})` : ''}</p>
                             <p style={styles.fieldValue}>{e.email}</p>
                         </div>
                     ))}
 
-                            {contact.phones?.map((p) => (
-                                <div key={p.phoneNumber} style={styles.field}>
+                    {contact.phones?.map((p) => (
+                        <div key={p.phoneNumber} style={styles.field}>
                             <p style={styles.fieldLabel}>Phone{p.label ? ` (${p.label})` : ''}</p>
                             <p style={styles.fieldValue}>{p.phoneNumber}</p>
                         </div>
                     ))}
+
                     {(!contact.emails || contact.emails.length === 0) && (!contact.phones || contact.phones.length === 0) && (
                         <p style={styles.fieldValue}>No contact details added.</p>
                     )}
